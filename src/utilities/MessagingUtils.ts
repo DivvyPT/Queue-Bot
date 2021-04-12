@@ -131,8 +131,10 @@ export class MessagingUtils {
             (await this.getGracePeriodString(queueGuild.grace_period));
       } else {
          description =
-            `React with ${Base.getConfig().joinEmoji} or type \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
-            `${queueChannel.name}\` to join or leave this queue.`;
+            //`React with ${Base.getConfig().joinEmoji} or type \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
+            //`${queueChannel.name}\` to join or leave this queue.`;
+            `Escreve \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
+            `${queueChannel.name}\` para entrares ou saires desta lista.`;
       }
       if (storedQueueChannel.header) {
          description += `\n\n${storedQueueChannel.header}`;
