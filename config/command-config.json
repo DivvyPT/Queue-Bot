@@ -7,7 +7,7 @@
    "displayCmd": "lista",
    "gracePeriodCmd": "grace",
    "headerCmd": "header",
-   "helpCmd": "help3",
+   "helpCmd": "help5",
    "joinCmd": "join",
    "kickCmd": "kick",
    "limitCmd": "limit",
