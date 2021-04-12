@@ -133,8 +133,8 @@ export class MessagingUtils {
          description =
             //`React with ${Base.getConfig().joinEmoji} or type \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
             //`${queueChannel.name}\` to join or leave this queue.`;
-            `Escreve "\`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
-            `${queueChannel.name}\` dino" para entrares ou saíres desta lista. É obrigatório colocar os dinos em frente do nome.`;
+            `Escreve "\`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ${queueChannel.name}\` dino" para entrares ou saíres desta lista. 
+            É obrigatório colocar os dinos em frente do nome.`;
       }
       if (storedQueueChannel.header) {
          description += `\n\n${storedQueueChannel.header}`;
