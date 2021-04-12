@@ -194,7 +194,13 @@ client.on("message", async (message) => {
       // Commands open to everyone
 // Display
       if (parsed.command === cmdConfig.displayCmd) {
-         Commands.displayQueue(parsed);
+         if (parsed.arguments.length >= 2) {
+            Commands.displayQueue(parsed);
+         } else {
+            message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
+            caso tenhas todos os dinos das estratégias.`).catch(() => null);
+         }
+         
 // Help
       } else if (parsed.command == cmdConfig.helpCmd) {
          Commands.help(parsed);
