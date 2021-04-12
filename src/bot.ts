@@ -200,7 +200,8 @@ client.on("message", async (message) => {
          Commands.help(parsed);
 // Join Text Queue
       } else if (parsed.command == cmdConfig.joinCmd) {
-         if (parsed.arguments.length >= 3) {
+         const args = parsed.arguments.split(' ');
+         if (args.length >= 2) {
             Commands.joinTextChannel(parsed, hasPermission);
          } else {
             //mensagem privada
