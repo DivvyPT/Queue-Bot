@@ -4,7 +4,7 @@
    "cleanupCmd": "cleanup",
    "clearCmd": "clear",
    "colorCmd": "color",
-   "displayCmd": "lista",
+   "displayCmd": "display",
    "gracePeriodCmd": "grace",
    "headerCmd": "header",
    "helpCmd": "help",
