@@ -443,7 +443,7 @@ export async function fillTargetChannel(
    }
 }
 
-/*client.on("messageReactionAdd", async (reaction, user) => {
+client.on("messageReactionAdd", async (reaction, user) => {
    await reactionToggle(reaction, user);
 });
 
@@ -451,7 +451,7 @@ client.on("messageReactionRemove", async (reaction, user) => {
    await reactionToggle(reaction, user);
 });
 
-async function reactionToggle(reaction: MessageReaction, user: User | PartialUser): Promise<void> {
+/*async function reactionToggle(reaction: MessageReaction, user: User | PartialUser): Promise<void> {
    if (reaction.partial) await reaction.fetch().catch(() => null);
    reaction = reaction.message.reactions.cache.find((r) => r.emoji.name === config.joinEmoji); // Handles a library bug
    if (!reaction || !reaction.me || user.bot) return;
