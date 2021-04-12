@@ -73,7 +73,7 @@ function checkPermission(message: Message): boolean {
    }
 }
 
-const EVERYONE_COMMANDS = [cmdConfig.joinCmd, cmdConfig.helpCmd, cmdConfig.myQueuesCmd];
+const EVERYONE_COMMANDS = [cmdConfig.joinCmd, cmdConfig.helpCmd, cmdConfig.myQueuesCmd, cmdConfig.displayCmd];
 client.on("message", async (message) => {
    if (message.author.bot) return;
    const guild = message.guild;
