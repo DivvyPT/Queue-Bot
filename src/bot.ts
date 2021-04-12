@@ -443,10 +443,9 @@ export async function fillTargetChannel(
    }
 }
 
-//client.on("messageReactionAdd", async (reaction, user) => {
+/*client.on("messageReactionAdd", async (reaction, user) => {
    await reactionToggle(reaction, user);
-//}
-);
+});
 
 client.on("messageReactionRemove", async (reaction, user) => {
    await reactionToggle(reaction, user);
@@ -472,7 +471,7 @@ async function reactionToggle(reaction: MessageReaction, user: User | PartialUse
       | NewsChannel
       | VoiceChannel;
    SchedulingUtils.scheduleDisplayUpdate(queueGuild, queueChannel);
-}
+}*/
 
 interface PatchNote {
    sent: boolean;
