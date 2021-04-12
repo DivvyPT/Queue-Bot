@@ -443,9 +443,10 @@ export async function fillTargetChannel(
    }
 }
 
-client.on("messageReactionAdd", async (reaction, user) => {
+//client.on("messageReactionAdd", async (reaction, user) => {
    await reactionToggle(reaction, user);
-});
+//}
+);
 
 client.on("messageReactionRemove", async (reaction, user) => {
    await reactionToggle(reaction, user);
