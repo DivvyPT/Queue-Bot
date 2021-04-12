@@ -194,19 +194,22 @@ client.on("message", async (message) => {
       // Commands open to everyone
 // Display
       if (parsed.command === cmdConfig.displayCmd) {
-         if (parsed.arguments.length >= 2) {
-            Commands.displayQueue(parsed);
-         } else {
-            message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
-            caso tenhas todos os dinos das estratégias.`).catch(() => null);
-         }
-         
+         Commands.displayQueue(parsed);
 // Help
       } else if (parsed.command == cmdConfig.helpCmd) {
          Commands.help(parsed);
 // Join Text Queue
       } else if (parsed.command == cmdConfig.joinCmd) {
-         Commands.joinTextChannel(parsed, hasPermission);
+         if (parsed.arguments.length >= 2) {
+            Commands.joinTextChannel(parsed, hasPermission);
+         } else {
+            //mensagem privada
+            /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
+            caso tenhas todos os dinos das estratégias.`).catch(() => null); */
+            //chat geral
+            message.reply(`Para entrar na fila é preciso digitar o nome do canal (apex, raro, etc) 
+            e pelo menos o nome de um dino, como tryos ou todos`);
+         }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
          Commands.myQueues(parsed);
