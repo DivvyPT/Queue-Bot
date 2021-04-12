@@ -3,7 +3,7 @@
 
    "color": "#478E81",
    "gracePeriod": "0",
-   "joinEmoji": "⤴",
+   "joinEmoji": "⤵️",
    "permissionsRegexp": "\\bmod(erator)?s?\\b|\\badmin(istrator)?s?\\b",
    "prefix": "!"
 }
