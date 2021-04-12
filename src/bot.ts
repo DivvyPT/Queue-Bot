@@ -24,6 +24,7 @@ import { SchedulingUtils } from "./utilities/SchedulingUtils";
 import util from "util";
 import { readFileSync, writeFileSync, exists } from "fs";
 import { MemberPermsTable } from "./utilities/tables/MemberPermsTable";
+import express from "express";
 
 // Setup client
 EventEmitter.defaultMaxListeners = 0; // Maximum number of events that can be handled at once.
@@ -50,9 +51,6 @@ client.on("uncaughtException", (err, origin) => {
       })}`
    );
 });
-//client.on("rateLimit", (rateLimitInfo) => {
-//   console.error(`Rate limit error:\n${util.inspect(rateLimitInfo, { depth: null })}`);
-//});
 
 // Top GG integration
 if (config.topGgToken) {
@@ -108,8 +106,8 @@ client.on("message", async (message) => {
             if (parsed.command === cmdConfig.startCmd) {
                Commands.start(parsed);
 // Display
-            } else if (parsed.command === cmdConfig.displayCmd) {
-               Commands.displayQueue(parsed);
+            //} else if (parsed.command === cmdConfig.displayCmd) {
+            //   Commands.displayQueue(parsed);
 // Set Queue
             } else if (parsed.command === cmdConfig.queueCmd) {
                Commands.setQueue(parsed);
@@ -160,7 +158,7 @@ client.on("message", async (message) => {
             } else if (parsed.command === cmdConfig.prefixCmd) {
                Commands.setServerSetting(parsed, true);
                if (parsed.arguments) {
-                  guild.me.setNickname(`(${parsed.arguments}) Queue Bot`).catch(() => null);
+                  guild.me.setNickname(`(${parsed.arguments}) Satan`).catch(() => null);
                }
 // Color
             } else if (parsed.command === cmdConfig.colorCmd) {
@@ -194,8 +192,11 @@ client.on("message", async (message) => {
          }
       }
       // Commands open to everyone
+// Display
+      if (parsed.command === cmdConfig.displayCmd) {
+         Commands.displayQueue(parsed);
 // Help
-      if (parsed.command == cmdConfig.helpCmd) {
+      } else if (parsed.command == cmdConfig.helpCmd) {
          Commands.help(parsed);
 // Join Text Queue
       } else if (parsed.command == cmdConfig.joinCmd) {
@@ -253,23 +254,6 @@ async function resumeAfterOffline(): Promise<void> {
          }
       }
    }
-   //// Cleanup displays db duplicates
-   //const storedDisplayChannels = await knex<DisplayChannel>("display_channels")
-   //   .orderBy("queue_channel_id")
-   //   .orderBy("id", "desc");
-   //const queueChannelIds = new Map<string, Set<string>>();
-   //for (const storedDisplayChannel of storedDisplayChannels) {
-   //   const displaySet = queueChannelIds.get(storedDisplayChannel.queue_channel_id);
-   //   if (displaySet) {
-   //      if (displaySet.has(storedDisplayChannel.display_channel_id)) {
-   //         await knex<DisplayChannel>("display_channels").where("id", storedDisplayChannel.id).del();
-   //      } else {
-   //         displaySet.add(storedDisplayChannel.display_channel_id);
-   //      }
-   //   } else {
-   //      queueChannelIds.set(storedDisplayChannel.queue_channel_id, new Set([storedDisplayChannel.display_channel_id]));
-   //   }
-   //}
 }
 
 // Cleanup deleted guilds and channels at startup. Then read in members inside tracked queues.
