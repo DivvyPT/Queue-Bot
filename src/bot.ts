@@ -208,10 +208,7 @@ client.on("message", async (message) => {
             /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
             caso tenhas todos os dinos das estratégias.`).catch(() => null); */
             //chat geral
-            message.reply(`Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.`)
-            .then(msg => {
-    msg.delete(10000)
-  });
+            message.reply(`Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.`);
          }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
