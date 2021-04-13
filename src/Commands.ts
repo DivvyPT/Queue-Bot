@@ -309,7 +309,7 @@ export class Commands {
             SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel as TextChannel | NewsChannel | VoiceChannel);
          }
          SchedulingUtils.scheduleResponseToMessage(
-            "Kicked " + storedQueueMemberIds.map((id) => `<@!${id}>`).join(", ") + ` from the \`${queueChannel.name}\` queue.`,
+            "Kickado " + storedQueueMemberIds.map((id) => `<@!${id}>`).join(", ") + ` da lista \`${queueChannel.name}\`.`,
             message
          );
       }
@@ -483,8 +483,8 @@ export class Commands {
             if (storedQueueChannel?.max_members && storedQueueMembers.length >= +storedQueueChannel.max_members) {
                const channel = message.channel as TextChannel | NewsChannel;
                MessagingUtils.sendTempMessage(
-                  `Failed to join. \`${queueChannel.name}\` ` +
-                     `queue is full (${+storedQueueChannel.max_members} /${+storedQueueChannel.max_members}).`,
+                  `Falha ao entrar. \`${queueChannel.name}\` ` +
+                     `lista está cheia (${+storedQueueChannel.max_members} /${+storedQueueChannel.max_members}).`,
                   channel,
                   10
                );
@@ -497,14 +497,14 @@ export class Commands {
       if (memberIdsToRemove.length > 0) {
          // Remove from queue
          await QueueMemberTable.unstoreQueueMembers(queueChannel.id, memberIdsToRemove);
-         response += "Removed " + memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") + ` from the \`${queueChannel.name}\` queue.\n`;
+         response += "Removido " + memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") + ` da lista do \`${queueChannel.name}\`.\n`;
       }
       if (memberIdsToAdd.length > 0) {
          // Parse message
          const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);
          // Add to queue
          await QueueMemberTable.storeQueueMembers(queueChannel.id, memberIdsToAdd, personalMessage);
-         response += "Added " + memberIdsToAdd.map((id) => `<@!${id}>`).join(", ") + ` to the \`${queueChannel.name}\` queue.`;
+         response += "Adicionado " + memberIdsToAdd.map((id) => `<@!${id}>`).join(", ") + ` à lista de espera do \`${queueChannel.name}\`.`;
       }
       SchedulingUtils.scheduleResponseToMessage(response, message);
       SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel);
