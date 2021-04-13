@@ -185,8 +185,8 @@ client.on("message", async (message) => {
          } else {
             message.author
                .send(
-                  `You don't have permission to use my commands in \`${message.guild.name}\`. ` +
-                     `You must be assigned a \`queue mod\`, \`mod\`, or \`admin\` role.`
+                  `Não tens permissão para utilizar esse comando em \`${message.guild.name}\`. ` +
+                     `Apenas o líder e restante staff estão autorizados.`
                )
                .catch(() => null);
          }
