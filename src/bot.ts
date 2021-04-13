@@ -203,9 +203,8 @@ client.on("message", async (message) => {
          Commands.help(parsed);
 // Join Text Queue
       } else if (parsed.command == cmdConfig.joinCmd) {
-         const args = parsed.arguments.split(' ');
-         console.log(`Tamanho: ${args.length}, valor: ${JSON.stringify(args)}`);
-         if (args.length >= 1) {
+         const args = parsed.arguments.trim().split(' ');
+         if (args.length >= 1 && args[0]!=='') {
             Commands.cleanQueue(parsed);
             Commands.joinTextChannel(parsed, hasPermission);
          } else {
