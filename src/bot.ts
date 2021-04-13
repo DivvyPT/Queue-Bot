@@ -98,11 +98,11 @@ client.on("message", async (message) => {
       parsed.arguments = message.content.substring(queueGuild.prefix.length + parsed.command.length + 1).trim();
       const hasPermission = checkPermission(message);
 
-      if (queueGuild.cleanup_commands == "on") {
-         setTimeout(() => message.delete().catch(() => null), 3000);
-      }
       // Restricted commands
       if (Object.values(cmdConfig).includes(parsed.command) && !EVERYONE_COMMANDS.includes(parsed.command)) {
+         if (queueGuild.cleanup_commands == "on") {
+            setTimeout(() => message.delete().catch(() => null), 3000);
+         }
          if (hasPermission) {
             /* eslint-disable prettier/prettier */
             if (parsed.command === cmdConfig.startCmd) {
