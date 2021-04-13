@@ -309,7 +309,7 @@ export class Commands {
             SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel as TextChannel | NewsChannel | VoiceChannel);
          }
          SchedulingUtils.scheduleResponseToMessage(
-            "Kickado " + storedQueueMemberIds.map((id) => `<@!${id}>`).join(", ") + ` da lista \`${queueChannel.name}\`.`,
+            "Kickado " + storedQueueMemberIds.map((id) => `<@!${id}>`).join(", ") + ` da lista de espera \`${queueChannel.name}\`.`,
             message
          );
       }
