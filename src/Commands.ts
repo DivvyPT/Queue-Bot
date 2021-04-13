@@ -504,7 +504,7 @@ export class Commands {
          const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);
          // Add to queue
          await QueueMemberTable.storeQueueMembers(queueChannel.id, memberIdsToAdd, personalMessage);
-         response += "Adicionado " + memberIdsToAdd.map((id) => `<@!${id}>`).join(", ") + ` à lista de espera do \`${queueChannel.name}\`.`;
+         response += "Adicionado " + memberIdsToAdd.map((id) => `<@!${id}>`).join(", ") + ` à lista de espera \`${queueChannel.name}\`.`;
       }
       SchedulingUtils.scheduleResponseToMessage(response, message);
       SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel);
