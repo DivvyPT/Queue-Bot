@@ -204,7 +204,7 @@ client.on("message", async (message) => {
 // Join Text Queue
       } else if (parsed.command == cmdConfig.joinCmd) {
          const args = parsed.arguments.split(' ');
-         if (args.length >= 2) {
+         if (args.length >= 1) {
             Commands.cleanQueue(parsed);
             Commands.joinTextChannel(parsed, hasPermission);
          } else {
