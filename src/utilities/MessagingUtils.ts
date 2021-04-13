@@ -133,8 +133,7 @@ export class MessagingUtils {
          description =
             //`React with ${Base.getConfig().joinEmoji} or type \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
             //`${queueChannel.name}\` to join or leave this queue.`;
-            `Escreve "\`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ${queueChannel.name}\` dino" para entrares nesta lista. 
-            É obrigatório colocar os dinos em frente do nome. Se puderes levar qualquer um coloca "todos". Para sair da lista clica no emoji :arrow_heading_down:`;
+            `Escreve "\`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ${queueChannel.name}\` dino" para entrares nesta lista. É obrigatório colocar os dinos em frente do nome. Se puderes levar qualquer um coloca "todos". Para sair da lista clica no emoji :arrow_heading_down:`;
       }
       if (storedQueueChannel.header) {
          description += `\n\n${storedQueueChannel.header}`;
