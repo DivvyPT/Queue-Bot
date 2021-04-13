@@ -35,7 +35,9 @@ const app = express();
 app.listen(PORT, () => {
    console.log(`Our app is running on port ${PORT}`);
 });
-app.get('/',(req,res) => {return res.send('Hello');});
+app.get("/", (req, res) => {
+   return res.send("Hello");
+});
 
 const config = Base.getConfig();
 const cmdConfig = Base.getCmdConfig();
@@ -208,7 +210,9 @@ client.on("message", async (message) => {
             /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
             caso tenhas todos os dinos das estratégias.`).catch(() => null); */
             //chat geral
-            message.reply(`Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.`);
+            message.reply(`Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.`).then(() => {
+               message.delete({ timeout: 10000 })
+             });
          }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
