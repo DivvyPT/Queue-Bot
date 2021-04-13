@@ -196,6 +196,7 @@ client.on("message", async (message) => {
       // Commands open to everyone
 // Display
       if (parsed.command === cmdConfig.displayCmd) {
+         Commands.cleanQueue(parsed);
          Commands.displayQueue(parsed);
 // Help
       } else if (parsed.command == cmdConfig.helpCmd) {
@@ -204,6 +205,7 @@ client.on("message", async (message) => {
       } else if (parsed.command == cmdConfig.joinCmd) {
          const args = parsed.arguments.split(' ');
          if (args.length >= 2) {
+            Commands.cleanQueue(parsed);
             Commands.joinTextChannel(parsed, hasPermission);
          } else {
             const channel = message.channel as TextChannel | NewsChannel;

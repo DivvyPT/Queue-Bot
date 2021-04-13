@@ -902,4 +902,36 @@ export class Commands {
          [array[i], array[j]] = [array[j], array[i]];
       }
    }
+
+   public static async cleanQueue(parsed: ParsedArguments): Promise<void> {
+      const message = parsed.message;
+      const queueChannel = await ParsingUtils.getStoredChannel(parsed, message.mentions.members.size > 0, "text");
+      if (!queueChannel) return;
+
+      const storedQueueMembers = await QueueMemberTable.getFromQueue(queueChannel);
+      const memberIdsToRemove: string[] = [];
+
+      for (const storedMember of storedQueueMembers) {
+         //2021-04-13 14:37:59
+         const timeJoined = new Date(storedMember.created_at).getTime();
+         const now = new Date().getTime();
+         const timeout = parseInt(process.env.QUEUE_TIMEOUT);
+         if (Math.abs(now - timeJoined) > timeout) {
+            memberIdsToRemove.push(storedMember.queue_member_id);
+         }
+      }
+
+      let response = "";
+      if (memberIdsToRemove.length > 0) {
+         // Remove from queue
+         await QueueMemberTable.unstoreQueueMembers(queueChannel.id, memberIdsToRemove);
+         response +=
+            "Removido " +
+            memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") +
+            ` da lista do \`${queueChannel.name}\` por inatividade.\n`;
+      }
+
+      SchedulingUtils.scheduleResponseToMessage(response, message);
+      SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel);
+   }
 }
