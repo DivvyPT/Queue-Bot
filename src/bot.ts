@@ -208,7 +208,7 @@ client.on("message", async (message) => {
             /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
             caso tenhas todos os dinos das estratégias.`).catch(() => null); */
             //chat geral
-            message.reply(`Para entrar na lista de espera é preciso escrever o nome do canal (apex, unico, etc) e pelo menos o nome de um dino, como tryos ou todos`);
+            message.reply(`Para entrar na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer escreve !join canal todos.`);
          }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
