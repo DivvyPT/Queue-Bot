@@ -101,7 +101,8 @@ client.on("message", async (message) => {
       // Restricted commands
       if (Object.values(cmdConfig).includes(parsed.command) && !EVERYONE_COMMANDS.includes(parsed.command)) {
          if (queueGuild.cleanup_commands == "on") {
-            setTimeout(() => message.delete().catch(() => null), 3000);
+            //setTimeout(() => message.delete().catch(() => null), 3000);
+            setTimeout(() => message.delete({ timeout: 10000 }));
          }
          if (hasPermission) {
             /* eslint-disable prettier/prettier */
