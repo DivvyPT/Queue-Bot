@@ -213,7 +213,7 @@ client.on("message", async (message) => {
             /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
             caso tenhas todos os dinos das estratégias.`).catch(() => null); */
             //chat geral
-            MessagingUtils.sendTempMessage("Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.", channel, 10);
+            MessagingUtils.sendTempMessage("Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join tryos. Se conseguires fazer com qualquer um escreve !join  todos.", channel, 10);
          }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
