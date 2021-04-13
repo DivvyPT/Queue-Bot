@@ -928,7 +928,7 @@ export class Commands {
          response +=
             "Removido " +
             memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") +
-            ` da lista do \`${queueChannel.name}\` por inatividade.\n`;
+            ` da lista \`${queueChannel.name}\` por inatividade.\n`;
       }
 
       SchedulingUtils.scheduleResponseToMessage(response, message);
