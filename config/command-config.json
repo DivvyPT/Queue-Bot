@@ -13,7 +13,7 @@
    "limitCmd": "limit",
    "mentionCmd": "mention",
    "modeCmd": "mode",
-   "myQueuesCmd": "myqueues",
+   "myQueuesCmd": "minhavez",
    "nextCmd": "next",
    "prefixCmd": "prefix",
    "pullNumCmd": "pullnum",
