@@ -206,13 +206,12 @@ client.on("message", async (message) => {
          if (args.length >= 2) {
             Commands.joinTextChannel(parsed, hasPermission);
          } else {
+            const channel = message.channel as TextChannel | NewsChannel;
             //mensagem privada
             /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
             caso tenhas todos os dinos das estratégias.`).catch(() => null); */
             //chat geral
-            message.reply(`Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.`).then(() => {
-               message.delete({ timeout: 10000 })
-             });
+            MessagingUtils.sendTempMessage("Para entrares na lista de espera tens de escrever o nome dos dinos que podes levar para esta raid. Exemplo: !join canal tryos. Se conseguires fazer com qualquer um escreve !join canal todos.", channel, 10);
          }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
