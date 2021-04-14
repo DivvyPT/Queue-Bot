@@ -2,7 +2,7 @@
    "autofillCmd": "autofill",
    "blacklistCmd": "blacklist",
    "cleanupCmd": "cleanup",
-   "clearCmd": "clear",
+   "clearCmd": "limpar",
    "colorCmd": "color",
    "displayCmd": "lista",
    "gracePeriodCmd": "grace",
