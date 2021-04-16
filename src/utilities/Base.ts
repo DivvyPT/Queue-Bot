@@ -1,7 +1,5 @@
 import { Client, GuildMember } from "discord.js";
-import { readFileSync } from "fs";
 import path from "path";
-import "dotenv/config";
 import { knex, Knex } from "knex";
 import { CommandConfigJson, ConfigJson } from "./Interfaces";
 
