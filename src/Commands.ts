@@ -479,7 +479,8 @@ export class Commands {
             // Already in queue, set to remove
             // memberIdsToRemove.push(memberId);
             // Member queued, update description/personal message
-            const storedQueuedMember = await QueueMemberTable.get(queueChannel.id, memberId);
+            const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);
+            QueueMemberTable.updateQueueMember(queueChannel.id, memberId, personalMessage);
          } else if (!(await MemberPermsTable.isBlacklisted(queueChannel.id, memberId))) {
             // Not in queue, set to add
             if (storedQueueChannel?.max_members && storedQueueMembers.length >= +storedQueueChannel.max_members) {
