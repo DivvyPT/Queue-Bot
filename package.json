@@ -33,6 +33,7 @@
     "@types/express": "^4.17.11",
     "@types/node": "^14.14.37",
     "@typescript-eslint/parser": "^4.20.0",
+    "dotenv": "^8.2.0",
     "eslint": "^7.23.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
