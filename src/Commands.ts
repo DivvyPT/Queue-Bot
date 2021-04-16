@@ -473,11 +473,14 @@ export class Commands {
       }
 
       const memberIdsToAdd: string[] = [];
-      const memberIdsToRemove: string[] = [];
+      //const memberIdsToRemove: string[] = [];
       for (const memberId of memberIdsToToggle) {
          if (storedQueueMembers.some((storedMember) => storedMember.queue_member_id === memberId)) {
             // Already in queue, set to remove
-            memberIdsToRemove.push(memberId);
+            // memberIdsToRemove.push(memberId);
+            // Member queued, update description/personal message
+            const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);
+            QueueMemberTable.updateQueueMember(queueChannel.id, memberId, personalMessage);
          } else if (!(await MemberPermsTable.isBlacklisted(queueChannel.id, memberId))) {
             // Not in queue, set to add
             if (storedQueueChannel?.max_members && storedQueueMembers.length >= +storedQueueChannel.max_members) {
@@ -494,11 +497,11 @@ export class Commands {
          }
       }
       let response = "";
-      if (memberIdsToRemove.length > 0) {
+      /* if (memberIdsToRemove.length > 0) {
          // Remove from queue
          await QueueMemberTable.unstoreQueueMembers(queueChannel.id, memberIdsToRemove);
          response += "Removido " + memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") + ` da lista do \`${queueChannel.name}\`.\n`;
-      }
+      } */
       if (memberIdsToAdd.length > 0) {
          // Parse message
          const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);

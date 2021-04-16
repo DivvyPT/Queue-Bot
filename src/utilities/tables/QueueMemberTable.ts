@@ -89,6 +89,12 @@ export class QueueMemberTable {
       }
    }
 
+   public static async updateQueueMember(queueChannelId: string, memberId: string, personalMessage?: string): Promise<void> {
+      await Base.getKnex()<QueueMember>("queue_members")
+         .update({ personal_message: personalMessage })
+         .where({ queue_channel_id: queueChannelId, queue_member_id: memberId });
+   }
+
    /**
     * @param queueChannelId
     * @param memberIdsToRemove
