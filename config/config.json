@@ -10,6 +10,6 @@
    "databasePassword": " ",
    "gracePeriod": "0",
    "joinEmoji": "⤴",
-   "permissionsRegexp": "\\bmod(erator)?s?\\b|\\badmin(istrator)?s?\\b|\\bstaff(istrator)?s?\\b",
+   "permissionsRegexp": "\\bmod(erator)?s?\\b|\\badmin(istrator)?s?\\b|\\bstaff\\b",
    "prefix": "!"
 }
