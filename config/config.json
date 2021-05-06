@@ -4,7 +4,7 @@
    "color": "#478E81",
    "gracePeriod": "0",
    "joinEmoji": "⤵️",
-   "permissionsRegexp": "\\bmod(erator)?s?\\b|\\badmin(istrator)?s?\\b|\\bstaff\\b",
+   "permissionsRegexp": "\\bmod(erator)?s?\\b|\\badmin(istrator)?s?\\b|\\bteste\\b",
    "prefix": "!"
 }
 
