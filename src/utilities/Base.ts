@@ -29,7 +29,7 @@ export class Base {
 
    protected static knex = knex({
       client: process.env.DB_TYPE,
-      connection: process.env.DATABASE_URL,
+      connection: `${process.env.DATABASE_URL}?ssl=true`,
    });
 
    protected static client = new Client({
