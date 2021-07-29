@@ -744,7 +744,7 @@ export class Commands {
       const storedQueueMemberIds = (await QueueMemberTable.getFromQueue(queueChannel)).map((member) => member.queue_member_id);
       if (storedQueueMemberIds?.length > 0) {
          SchedulingUtils.scheduleResponseToMessage(
-            `**${message.author.username}** mentioned **${queueChannel.name}**` +
+            `**${message.author.username}** mencionou **${queueChannel.name}**` +
                (msg ? `: \`${msg}\`\n` : `.\n`) +
                storedQueueMemberIds.map((id) => `<@${id}>`).join(", "),
             message
