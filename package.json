@@ -4,7 +4,7 @@
   "description": "A Discord bot!",
   "main": "build/bot.js",
   "engines": {
-    "node": "15.14.x"
+    "node": "16.15.x"
   },
   "scripts": {
     "build": "tsc -p .",
