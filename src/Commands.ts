@@ -309,7 +309,7 @@ export class Commands {
             SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel as TextChannel | NewsChannel | VoiceChannel);
          }
          SchedulingUtils.scheduleResponseToMessage(
-            "Kicked " + storedQueueMemberIds.map((id) => `<@!${id}>`).join(", ") + ` from the \`${queueChannel.name}\` queue.`,
+            "Kickado " + storedQueueMemberIds.map((id) => `<@!${id}>`).join(", ") + ` da lista de espera \`${queueChannel.name}\`.`,
             message
          );
       }
@@ -473,18 +473,21 @@ export class Commands {
       }
 
       const memberIdsToAdd: string[] = [];
-      const memberIdsToRemove: string[] = [];
+      //const memberIdsToRemove: string[] = [];
       for (const memberId of memberIdsToToggle) {
          if (storedQueueMembers.some((storedMember) => storedMember.queue_member_id === memberId)) {
             // Already in queue, set to remove
-            memberIdsToRemove.push(memberId);
+            // memberIdsToRemove.push(memberId);
+            // Member queued, update description/personal message
+            const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);
+            QueueMemberTable.updateQueueMember(queueChannel.id, memberId, personalMessage);
          } else if (!(await MemberPermsTable.isBlacklisted(queueChannel.id, memberId))) {
             // Not in queue, set to add
             if (storedQueueChannel?.max_members && storedQueueMembers.length >= +storedQueueChannel.max_members) {
                const channel = message.channel as TextChannel | NewsChannel;
                MessagingUtils.sendTempMessage(
-                  `Failed to join. \`${queueChannel.name}\` ` +
-                     `queue is full (${+storedQueueChannel.max_members} /${+storedQueueChannel.max_members}).`,
+                  `Falha ao entrar. \`${queueChannel.name}\` ` +
+                     `lista está cheia (${+storedQueueChannel.max_members} /${+storedQueueChannel.max_members}).`,
                   channel,
                   10
                );
@@ -494,17 +497,17 @@ export class Commands {
          }
       }
       let response = "";
-      if (memberIdsToRemove.length > 0) {
+      /* if (memberIdsToRemove.length > 0) {
          // Remove from queue
          await QueueMemberTable.unstoreQueueMembers(queueChannel.id, memberIdsToRemove);
-         response += "Removed " + memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") + ` from the \`${queueChannel.name}\` queue.\n`;
-      }
+         response += "Removido " + memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") + ` da lista do \`${queueChannel.name}\`.\n`;
+      } */
       if (memberIdsToAdd.length > 0) {
          // Parse message
          const personalMessage = MessagingUtils.removeMentions(parsed.arguments, queueChannel).substring(0, 128);
          // Add to queue
          await QueueMemberTable.storeQueueMembers(queueChannel.id, memberIdsToAdd, personalMessage);
-         response += "Added " + memberIdsToAdd.map((id) => `<@!${id}>`).join(", ") + ` to the \`${queueChannel.name}\` queue.`;
+         response += "Adicionado " + memberIdsToAdd.map((id) => `<@!${id}>`).join(", ") + ` à lista de espera \`${queueChannel.name}\`.`;
       }
       SchedulingUtils.scheduleResponseToMessage(response, message);
       SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel);
@@ -901,5 +904,37 @@ export class Commands {
          const j = Math.floor(Math.random() * (i + 1));
          [array[i], array[j]] = [array[j], array[i]];
       }
+   }
+
+   public static async cleanQueue(parsed: ParsedArguments): Promise<void> {
+      const message = parsed.message;
+      const queueChannel = await ParsingUtils.getStoredChannel(parsed, message.mentions.members.size > 0, "text");
+      if (!queueChannel) return;
+
+      const storedQueueMembers = await QueueMemberTable.getFromQueue(queueChannel);
+      const memberIdsToRemove: string[] = [];
+
+      for (const storedMember of storedQueueMembers) {
+         //2021-04-13 14:37:59
+         const timeJoined = new Date(storedMember.created_at).getTime();
+         const now = new Date().getTime();
+         const timeout = parseInt(process.env.QUEUE_TIMEOUT);
+         if (Math.abs(now - timeJoined) > timeout) {
+            memberIdsToRemove.push(storedMember.queue_member_id);
+         }
+      }
+
+      let response = "";
+      if (memberIdsToRemove.length > 0) {
+         // Remove from queue
+         await QueueMemberTable.unstoreQueueMembers(queueChannel.id, memberIdsToRemove);
+         response +=
+            "Removido " +
+            memberIdsToRemove.map((id) => `<@!${id}>`).join(", ") +
+            ` da lista de espera \`${queueChannel.name}\` por inatividade.\n`;
+      }
+
+      SchedulingUtils.scheduleResponseToMessage(response, message);
+      SchedulingUtils.scheduleDisplayUpdate(parsed.queueGuild, queueChannel);
    }
 }

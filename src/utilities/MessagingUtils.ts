@@ -131,8 +131,10 @@ export class MessagingUtils {
             (await this.getGracePeriodString(queueGuild.grace_period));
       } else {
          description =
-            `React with ${Base.getConfig().joinEmoji} or type \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
-            `${queueChannel.name}\` to join or leave this queue.`;
+            //`React with ${Base.getConfig().joinEmoji} or type \`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ` +
+            //`${queueChannel.name}\` to join or leave this queue.`;
+            //`Escreve "\`${queueGuild.prefix}${Base.getCmdConfig().joinCmd} ${queueChannel.name}\` dino" para entrares nesta lista. É obrigatório colocar os dinos em frente do nome. Se puderes levar qualquer um coloca "todos". Para sair da lista clica no emoji :arrow_heading_down:`;
+            `Escreve "\`${queueGuild.prefix}${Base.getCmdConfig().joinCmd}\` dino" para entrares nesta lista. É obrigatório colocar os dinos em frente do nome. Se puderes levar qualquer um coloca "todos". Para sair da lista clica no emoji :arrow_heading_down:`;
       }
       if (storedQueueChannel.header) {
          description += `\n\n${storedQueueChannel.header}`;
@@ -168,9 +170,9 @@ export class MessagingUtils {
             embed.addField("\u200b", "\u200b");
          }
          if (storedQueueChannel.max_members) {
-            embed.fields[0].name = `Length: ${queueMembers ? queueMembers.length : 0} of ${storedQueueChannel.max_members}`;
+            embed.fields[0].name = `Total: ${queueMembers ? queueMembers.length : 0} de ${storedQueueChannel.max_members}`;
          } else {
-            embed.fields[0].name = `Length: ${queueMembers ? queueMembers.length : 0}`;
+            embed.fields[0].name = `Total: ${queueMembers ? queueMembers.length : 0}`;
          }
          embeds.push({ embed: embed });
          // Setup for next 200 members (Keep at the bottom of loop. We want to generate 1 embed for empty queues).

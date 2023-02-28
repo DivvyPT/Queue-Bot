@@ -116,26 +116,27 @@ export class ParsingUtils {
       type?: string
    ): VoiceChannel | TextChannel | NewsChannel {
       if (availableChannels.length > 0) {
+         return parsed.message.channel as TextChannel;
          // Extract channel name from message
-         const channels = type ? availableChannels.filter((channel) => channel.type === type) : availableChannels;
+         // const channels = type ? availableChannels.filter((channel) => channel.type === type) : availableChannels;
 
-         if (channels.length === 1) {
-            return channels[0];
-         } else {
-            const channel = this.extractChannel(parsed, channels);
-            if (channel) {
-               return channel;
-            } else {
-               if (channels.map((ch) => ch.id).includes(parsed.message.channel.id) &&
-                  type !== "voice" &&
-                  !parsed.arguments
-               ) {
-                  return parsed.message.channel as TextChannel;
-               } else {
-                  this.reportChannelNotFound(parsed, channels, includeMention, true, type);
-               }
-            }
-         }
+         // if (channels.length === 1) {
+         //    return channels[0];
+         // } else {
+         //    const channel = this.extractChannel(parsed, channels);
+         //    if (channel) {
+         //       return channel;
+         //    } else {
+         //       if (channels.map((ch) => ch.id).includes(parsed.message.channel.id) &&
+         //          type !== "voice" &&
+         //          !parsed.arguments
+         //       ) {
+         //          return parsed.message.channel as TextChannel;
+         //       } else {
+         //          this.reportChannelNotFound(parsed, channels, includeMention, true, type);
+         //       }
+         //    }
+         // }
       } else {
          SchedulingUtils.scheduleResponseToMessage(
             `No queue channels set.\n` +

@@ -32,14 +32,13 @@ export class Base {
   );
 
   protected static knex = knex({
-    client: Base.config.databaseType,
-    // connection: {
-    //    database: Base.config.databaseName,
-    //    host: Base.config.databaseHost,
-    //    password: Base.config.databasePassword,
-    //    user: Base.config.databaseUsername,
-    // },
-    connection: process.env.DATABASE_URL,
+    client: process.env.DB_TYPE,
+      connection: {
+         connectionString: process.env.DATABASE_URL,
+         ssl: {
+            rejectUnauthorized: false,
+         },
+      },
   });
 
   protected static client = new Client({

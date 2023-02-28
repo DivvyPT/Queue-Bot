@@ -24,16 +24,26 @@ import { SchedulingUtils } from "./utilities/SchedulingUtils";
 import util from "util";
 import { readFileSync, writeFileSync, exists } from "fs";
 import { MemberPermsTable } from "./utilities/tables/MemberPermsTable";
+import express from "express";
 
 // Setup client
 EventEmitter.defaultMaxListeners = 0; // Maximum number of events that can be handled at once.
 SchedulingUtils.startScheduler();
 
+const PORT = process.env.PORT || 3000;
+const app = express();
+app.listen(PORT, () => {
+   console.log(`Our app is running on port ${PORT}`);
+});
+app.get("/", (req, res) => {
+   return res.send("Hello");
+});
+
 const config = Base.getConfig();
 const cmdConfig = Base.getCmdConfig();
 const client = Base.getClient();
 const knex = Base.getKnex();
-client.login(config.token);
+client.login(process.env.DISCORD_TOKEN);
 client.on("error", console.error);
 client.on("shardError", console.error);
 client.on("uncaughtException", (err, origin) => {
@@ -43,9 +53,6 @@ client.on("uncaughtException", (err, origin) => {
       })}`
    );
 });
-//client.on("rateLimit", (rateLimitInfo) => {
-//   console.error(`Rate limit error:\n${util.inspect(rateLimitInfo, { depth: null })}`);
-//});
 
 // Top GG integration
 if (config.topGgToken) {
@@ -68,7 +75,7 @@ function checkPermission(message: Message): boolean {
    }
 }
 
-const EVERYONE_COMMANDS = [cmdConfig.joinCmd, cmdConfig.helpCmd, cmdConfig.myQueuesCmd];
+const EVERYONE_COMMANDS = [cmdConfig.joinCmd, cmdConfig.helpCmd, cmdConfig.myQueuesCmd, cmdConfig.displayCmd];
 client.on("message", async (message) => {
    if (message.author.bot) return;
    const guild = message.guild;
@@ -101,8 +108,8 @@ client.on("message", async (message) => {
             if (parsed.command === cmdConfig.startCmd) {
                Commands.start(parsed);
 // Display
-            } else if (parsed.command === cmdConfig.displayCmd) {
-               Commands.displayQueue(parsed);
+            //} else if (parsed.command === cmdConfig.displayCmd) {
+            //   Commands.displayQueue(parsed);
 // Set Queue
             } else if (parsed.command === cmdConfig.queueCmd) {
                Commands.setQueue(parsed);
@@ -153,7 +160,7 @@ client.on("message", async (message) => {
             } else if (parsed.command === cmdConfig.prefixCmd) {
                Commands.setServerSetting(parsed, true);
                if (parsed.arguments) {
-                  guild.me.setNickname(`(${parsed.arguments}) Queue Bot`).catch(() => null);
+                  guild.me.setNickname(`(${parsed.arguments}) Satan`).catch(() => null);
                }
 // Color
             } else if (parsed.command === cmdConfig.colorCmd) {
@@ -180,19 +187,34 @@ client.on("message", async (message) => {
          } else {
             message.author
                .send(
-                  `You don't have permission to use my commands in \`${message.guild.name}\`. ` +
-                     `You must be assigned a \`queue mod\`, \`mod\`, or \`admin\` role.`
+                  `Não tens permissão para utilizar esse comando em \`${message.guild.name}\`. ` +
+                     `Apenas o líder e restante staff estão autorizados.`
                )
                .catch(() => null);
          }
       }
       // Commands open to everyone
+// Display
+      if (parsed.command === cmdConfig.displayCmd) {
+         Commands.cleanQueue(parsed);
+         Commands.displayQueue(parsed);
 // Help
-      if (parsed.command == cmdConfig.helpCmd) {
+      } else if (parsed.command == cmdConfig.helpCmd) {
          Commands.help(parsed);
 // Join Text Queue
       } else if (parsed.command == cmdConfig.joinCmd) {
-         Commands.joinTextChannel(parsed, hasPermission);
+         const args = parsed.arguments.trim().split(' ');
+         if (args.length >= 1 && args[0]!=='') {
+            Commands.cleanQueue(parsed);
+            Commands.joinTextChannel(parsed, hasPermission);
+         } else {
+            const channel = message.channel as TextChannel | NewsChannel;
+            //mensagem privada
+            /*message.author.send(`Criatura, por favor, nome do canal seguido do dino ou 'todos', 
+            caso tenhas todos os dinos das estratégias.`).catch(() => null); */
+            //chat geral
+            MessagingUtils.sendTempMessage("Para entrares na lista de espera tens de escrever !join com os dinos que podes levar para esta raid. Exemplo: !join tryos. Se conseguires fazer com qualquer um escreve !join todos.", channel, 15);
+         }
 // My Queues
       } else if (parsed.command == cmdConfig.myQueuesCmd) {
          Commands.myQueues(parsed);
@@ -246,23 +268,6 @@ async function resumeAfterOffline(): Promise<void> {
          }
       }
    }
-   //// Cleanup displays db duplicates
-   //const storedDisplayChannels = await knex<DisplayChannel>("display_channels")
-   //   .orderBy("queue_channel_id")
-   //   .orderBy("id", "desc");
-   //const queueChannelIds = new Map<string, Set<string>>();
-   //for (const storedDisplayChannel of storedDisplayChannels) {
-   //   const displaySet = queueChannelIds.get(storedDisplayChannel.queue_channel_id);
-   //   if (displaySet) {
-   //      if (displaySet.has(storedDisplayChannel.display_channel_id)) {
-   //         await knex<DisplayChannel>("display_channels").where("id", storedDisplayChannel.id).del();
-   //      } else {
-   //         displaySet.add(storedDisplayChannel.display_channel_id);
-   //      }
-   //   } else {
-   //      queueChannelIds.set(storedDisplayChannel.queue_channel_id, new Set([storedDisplayChannel.display_channel_id]));
-   //   }
-   //}
 }
 
 // Cleanup deleted guilds and channels at startup. Then read in members inside tracked queues.
@@ -471,9 +476,7 @@ async function reactionToggle(reaction: MessageReaction, user: User | PartialUse
    const storedQueueMember = await QueueMemberTable.get(storedDisplayChannel.queue_channel_id, user.id);
    if (storedQueueMember) {
       await QueueMemberTable.unstoreQueueMembers(storedDisplayChannel.queue_channel_id, [user.id]);
-   } else if (!(await MemberPermsTable.isBlacklisted(storedDisplayChannel.queue_channel_id, user.id))) {
-      await QueueMemberTable.storeQueueMembers(storedDisplayChannel.queue_channel_id, [user.id]);
-   }
+   } 
    const queueGuild = await QueueGuildTable.get(reaction.message.guild.id);
    const queueChannel = reaction.message.guild.channels.cache.get(storedDisplayChannel.queue_channel_id) as
       | TextChannel
