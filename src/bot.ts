@@ -1,27 +1,24 @@
 import DBL from "dblapi.js";
 import {
-  Guild,
-  GuildMember,
-  Message,
-  MessageOptions,
-  MessageReaction,
-  NewsChannel,
-  PartialUser,
-  TextChannel,
-  User,
-  VoiceChannel,
+   Guild,
+   GuildMember,
+   Message,
+   MessageOptions,
+   MessageReaction,
+   NewsChannel,
+   PartialUser,
+   TextChannel,
+   User,
+   VoiceChannel,
 } from "discord.js";
+import "dotenv/config";
 import { EventEmitter } from "events";
 import express from "express";
 import { exists, readFileSync, writeFileSync } from "fs";
 import util from "util";
 import { Commands } from "./Commands";
 import { Base } from "./utilities/Base";
-import {
-  ParsedArguments,
-  QueueChannel,
-  QueueMember,
-} from "./utilities/Interfaces";
+import { ParsedArguments, QueueChannel, QueueMember } from "./utilities/Interfaces";
 import { MessagingUtils } from "./utilities/MessagingUtils";
 import { SchedulingUtils } from "./utilities/SchedulingUtils";
 import { DisplayChannelTable } from "./utilities/tables/DisplayChannelTable";
@@ -37,10 +34,10 @@ SchedulingUtils.startScheduler();
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.listen(PORT, () => {
-  console.log(`Our app is running on port ${PORT}`);
+   console.log(`Our app is running on port ${PORT}`);
 });
 app.get("/", (req, res) => {
-  return res.send("Hello");
+   return res.send("Hello");
 });
 
 const config = Base.getConfig();
@@ -51,19 +48,19 @@ client.login(process.env.DISCORD_TOKEN);
 client.on("error", console.error);
 client.on("shardError", console.error);
 client.on("uncaughtException", (err, origin) => {
-  console.error(
-    `Caught exception:\n${util.inspect(err, {
-      depth: null,
-    })}\nException origin:\n${util.inspect(origin, {
-      depth: null,
-    })}`
-  );
+   console.error(
+      `Caught exception:\n${util.inspect(err, {
+         depth: null,
+      })}\nException origin:\n${util.inspect(origin, {
+         depth: null,
+      })}`
+   );
 });
 
 // Top GG integration
 if (config.topGgToken) {
-  const dbl = new DBL(config.topGgToken, client);
-  dbl.on("error", () => null);
+   const dbl = new DBL(config.topGgToken, client);
+   dbl.on("error", () => null);
 }
 
 /**
@@ -71,63 +68,46 @@ if (config.topGgToken) {
  * @param message Discord message object.
  */
 function checkPermission(message: Message): boolean {
-  try {
-    const channel = message.channel as TextChannel | NewsChannel;
-    const authorPerms = channel.permissionsFor(message.author);
-    const authorRoles = message.member.roles.cache;
-    return (
-      authorPerms.has("ADMINISTRATOR") ||
-      authorRoles.some((role) =>
-        RegExp(config.permissionsRegexp, "i").test(role.name)
-      )
-    );
-  } catch (e) {
-    return false;
-  }
+   try {
+      const channel = message.channel as TextChannel | NewsChannel;
+      const authorPerms = channel.permissionsFor(message.author);
+      const authorRoles = message.member.roles.cache;
+      return authorPerms.has("ADMINISTRATOR") || authorRoles.some((role) => RegExp(config.permissionsRegexp, "i").test(role.name));
+   } catch (e) {
+      return false;
+   }
 }
 
-const EVERYONE_COMMANDS = [
-  cmdConfig.joinCmd,
-  cmdConfig.helpCmd,
-  cmdConfig.myQueuesCmd,
-  cmdConfig.displayCmd,
-];
+const EVERYONE_COMMANDS = [cmdConfig.joinCmd, cmdConfig.helpCmd, cmdConfig.myQueuesCmd, cmdConfig.displayCmd];
 client.on("message", async (message) => {
-  if (message.author.bot) return;
-  const guild = message.guild;
-  let queueGuild = await QueueGuildTable.get(guild.id);
-  if (!queueGuild) {
-    await QueueGuildTable.storeQueueGuild(message.guild);
-    queueGuild = await QueueGuildTable.get(guild.id);
-  }
+   if (message.author.bot) return;
+   const guild = message.guild;
+   let queueGuild = await QueueGuildTable.get(guild.id);
+   if (!queueGuild) {
+      await QueueGuildTable.storeQueueGuild(message.guild);
+      queueGuild = await QueueGuildTable.get(guild.id);
+   }
 
-  const parsed: ParsedArguments = {
-    queueGuild: queueGuild,
-    message: message,
-    command: null,
-    arguments: null,
-  };
-  if (message.content.startsWith(queueGuild.prefix)) {
-    // Parse the message
-    // Note: prefix can contain spaces. Command can not contains spaces. parsedArgs can contain spaces.
-    parsed.command = message.content
-      .substring(queueGuild.prefix.length)
-      .split(" ")[0];
-    parsed.arguments = message.content
-      .substring(queueGuild.prefix.length + parsed.command.length + 1)
-      .trim();
-    const hasPermission = checkPermission(message);
+   const parsed: ParsedArguments = {
+      queueGuild: queueGuild,
+      message: message,
+      command: null,
+      arguments: null,
+   };
+   if (message.content.startsWith(queueGuild.prefix)) {
+      // Parse the message
+      // Note: prefix can contain spaces. Command can not contains spaces. parsedArgs can contain spaces.
+      parsed.command = message.content.substring(queueGuild.prefix.length).split(" ")[0];
+      parsed.arguments = message.content.substring(queueGuild.prefix.length + parsed.command.length + 1).trim();
+      const hasPermission = checkPermission(message);
 
-    // Restricted commands
-    if (
-      Object.values(cmdConfig).includes(parsed.command) &&
-      !EVERYONE_COMMANDS.includes(parsed.command)
-    ) {
-      if (queueGuild.cleanup_commands == "on") {
-        setTimeout(() => message.delete().catch(() => null), 3000);
-      }
-      if (hasPermission) {
-        /* eslint-disable prettier/prettier */
+      // Restricted commands
+      if (Object.values(cmdConfig).includes(parsed.command) && !EVERYONE_COMMANDS.includes(parsed.command)) {
+         if (queueGuild.cleanup_commands == "on") {
+            setTimeout(() => message.delete().catch(() => null), 3000);
+         }
+         if (hasPermission) {
+            /* eslint-disable prettier/prettier */
         if (parsed.command === cmdConfig.startCmd) {
           Commands.start(parsed);
           // Display

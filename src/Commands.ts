@@ -1,14 +1,14 @@
 import { GuildChannel, MessageEmbed, MessageEmbedOptions, MessageOptions, NewsChannel, TextChannel, VoiceChannel } from "discord.js";
-import { MemberPerm, ParsedArguments, QueueMember } from "./utilities/Interfaces";
 import { Base } from "./utilities/Base";
+import { MemberPerm, ParsedArguments, QueueMember } from "./utilities/Interfaces";
 import { MessagingUtils } from "./utilities/MessagingUtils";
 import { ParsingUtils } from "./utilities/ParsingUtils";
-import { DisplayChannelTable } from "./utilities/tables/DisplayChannelTable";
-import { QueueChannelTable } from "./utilities/tables/QueueChannelTable";
-import { QueueMemberTable } from "./utilities/tables/QueueMemberTable";
 import { SchedulingUtils } from "./utilities/SchedulingUtils";
-import { QueueGuildTable } from "./utilities/tables/QueueGuildTable";
+import { DisplayChannelTable } from "./utilities/tables/DisplayChannelTable";
 import { MemberPermsTable } from "./utilities/tables/MemberPermsTable";
+import { QueueChannelTable } from "./utilities/tables/QueueChannelTable";
+import { QueueGuildTable } from "./utilities/tables/QueueGuildTable";
+import { QueueMemberTable } from "./utilities/tables/QueueMemberTable";
 
 export class Commands {
    /**
@@ -889,10 +889,26 @@ export class Commands {
          label: "Grace period",
          options: "grace period",
       },
-      [Base.getCmdConfig().prefixCmd]: { dbVariable: "prefix", label: "Prefix", options: "prefix" },
-      [Base.getCmdConfig().colorCmd]: { dbVariable: "color", label: "Color", options: "color" },
-      [Base.getCmdConfig().cleanupCmd]: { dbVariable: "cleanup_commands", label: "Cleanup", options: "on|off" },
-      [Base.getCmdConfig().modeCmd]: { dbVariable: "msg_mode", label: "Message mode", options: "message mode" },
+      [Base.getCmdConfig().prefixCmd]: {
+         dbVariable: "prefix",
+         label: "Prefix",
+         options: "prefix",
+      },
+      [Base.getCmdConfig().colorCmd]: {
+         dbVariable: "color",
+         label: "Color",
+         options: "color",
+      },
+      [Base.getCmdConfig().cleanupCmd]: {
+         dbVariable: "cleanup_commands",
+         label: "Cleanup",
+         options: "on|off",
+      },
+      [Base.getCmdConfig().modeCmd]: {
+         dbVariable: "msg_mode",
+         label: "Message mode",
+         options: "message mode",
+      },
    };
 
    /**
