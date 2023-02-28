@@ -33,12 +33,12 @@ export class Base {
 
   protected static knex = knex({
     client: process.env.DB_TYPE,
-      connection: {
-         connectionString: process.env.DATABASE_URL,
-         ssl: {
-            rejectUnauthorized: false,
-         },
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false,
       },
+    },
   });
 
   protected static client = new Client({
