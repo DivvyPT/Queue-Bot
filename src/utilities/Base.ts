@@ -49,7 +49,7 @@ export class Base {
     partials: ["MESSAGE", "REACTION", "USER"],
     presence: {
       activity: {
-        type: `LISTENING`,
+        type: `JOGANDO`,
         name: `${Base.config.prefix}${Base.cmdConfig.helpCmd}`,
       },
       status: "online",
