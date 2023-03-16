@@ -49,8 +49,9 @@ export class Base {
     partials: ["MESSAGE", "REACTION", "USER"],
     presence: {
       activity: {
-        type: `JOGANDO`,
-        name: `${Base.config.prefix}${Base.cmdConfig.helpCmd}`,
+        type: `PLAYING`,
+        //name: `${Base.config.prefix}${Base.cmdConfig.helpCmd}`,
+        name: `Jurassic World Alive`,
       },
       status: "online",
     },
