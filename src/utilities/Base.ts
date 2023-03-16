@@ -33,9 +33,9 @@ export class Base {
 
   protected static knex = knex({
     client: process.env.DB_TYPE,
-    connection: {
+    connection: () => ({
       filename: "./queue.db",
-    },
+    }),
     useNullAsDefault: true,
   });
 
