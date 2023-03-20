@@ -1,0 +1,92 @@
+#! /bin/bash
+
+#para utilização de cores na saída
+source ./colors
+
+#caminho padrão
+destino=~/sistemas # inserir o caminho completo
+sistema=/cmc-api # nome da aplicacao (será criado um diretório dentro do destino)
+caminho=$PWD
+
+
+check_command() {
+  command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 é necessário, mas não foi instalado.  Saindo..."; exit 1; }
+}
+
+echo -e "${yellow}Script de compilação e inicialização de projetos Node${nc}\n" 
+echo -e "${yellow}Identifica o caminho onde o script está sendo chamado, e usa a pasta ${destino} como destino dos projetos compilados.${nc}"
+echo -e "${yellow}Além disso, é preciso ter os sequintes softwares/scripts instalados: ${nc}"
+echo -e "${yellow}1) Node Version Manager (nvm)${nc}"
+echo -e "${yellow}2) Node (versão 16.15.1)${nc}"
+echo -e "${yellow}3) yarn (gerenciador de pacotes)${nc}"
+echo -e "${yellow}4) pm2 (gerenciador de processos)${nc}"
+
+echo -e "${yellow}Verificando se 'nvm' node está instalado...${nc}"
+if [ ! -d "${HOME}/.nvm/.git" ]
+then
+  echo -e "${red}"Node Version Manager" (nvm) não encontrado. É preciso baixar e instalar este software antes de dar prosseguimento.${nc}"
+  exit
+fi
+
+echo -e "${yellow}Verificando se 'node' node está instalado...${nc}"
+command -v node >/dev/null 2>&1 || { nvm install 16.15.1; exit 0; }
+
+echo -e "${yellow}Verificando se 'yarn' node está instalado...${nc}"
+command -v yarn >/dev/null 2>&1 || { npm install yarn -g; exit 0; }
+
+echo -e "${yellow}Verificando se 'pm2' node está instalado...${nc}"
+command -v pm2 >/dev/null 2>&1 || { npm install pm2 -g; exit 0; }
+
+# Baixar a versão 'main' que será colocada em produção
+echo -e "Digite a versão desejada, ou 'enter' para compilar a última tag encontrada."
+read version
+if [ -z "$version" ]
+then
+  version=$(git tag --sort=committerdate | tail -1)
+  echo -e "${yellow}Fazendo o checkout da ultima tag encontrada: ${green}${version}${nc}"
+fi
+echo -e "Compilando a versão ${green}${version}${nc}"
+git checkout $version
+git pull
+
+cd ${caminho}/..
+if [ -d backend ] 
+then
+  cd backend
+  rm -rf dist
+  yarn
+  yarn typeorm migration:run
+  yarn build
+  echo -e "${green}Removendo pacotes de desenv${nc}"
+  yarn --prod
+  cp .env dist/.env
+  sed -i '/APP_VERSION/ c\APP_VERSION='${version} dist/.env
+  cp ormconfig.ts dist/ormconfig.js
+  cp -r node_modules dist/node_modules
+fi
+
+cd ${caminho}/..
+if [ -f .env ]
+then
+  echo -e "${yellow}Removendo instâncias antigas do projeto no PM2${nc}"
+  pm2 delete all
+  rm -rf ${destino}/${sistema}
+  mkdir -p ${destino}${sistema}
+  echo -e "${yellow}Movendo arquivos...${nc}"
+  cp ecosystem.config.js ${destino}${sistema}
+  mv backend/dist ${destino}${sistema}/backend
+  mv frontend/build ${destino}${sistema}/frontend
+else
+  echo -e "${red}Arquivo ${yellow} ecosystem ${red} não encontrado. Saindo..."
+fi
+
+cd ${destino}${sistema}
+pm2 flush
+pm2 start
+
+echo -e "${yellow}Restaurando versão de desenvolvimento${nc}"
+cd ${caminho}/..
+cd backend
+yarn 
+cd ../frontend
+yarn
