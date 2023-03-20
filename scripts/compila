@@ -29,7 +29,11 @@ then
 fi
 
 echo -e "${yellow}Verificando se 'node' node está instalado...${nc}"
-command -v node >/dev/null 2>&1 || { nvm install 16.15.1; exit 0; }
+if ! [ -x "$(command -v npm)" ]; then
+  echo 'Instalando node versão 16.15.1' >&2
+  nvm install 16.15.1
+fi
+
 
 echo -e "${yellow}Verificando se 'yarn' node está instalado...${nc}"
 command -v yarn >/dev/null 2>&1 || { npm install yarn -g; exit 0; }
