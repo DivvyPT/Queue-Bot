@@ -5,43 +5,69 @@ source ./colors
 
 #caminho padrão
 destino=~/sistemas # inserir o caminho completo
-sistema=/cmc-api # nome da aplicacao (será criado um diretório dentro do destino)
-caminho=$PWD
+sistema=Owen # nome da aplicacao (será criado um diretório dentro do destino)
+caminho=$PWD/..
 
 
 check_command() {
   command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 é necessário, mas não foi instalado.  Saindo..."; exit 1; }
 }
 
-echo -e "${yellow}Script de compilação e inicialização de projetos Node${nc}\n" 
-echo -e "${yellow}Identifica o caminho onde o script está sendo chamado, e usa a pasta ${destino} como destino dos projetos compilados.${nc}"
-echo -e "${yellow}Além disso, é preciso ter os sequintes softwares/scripts instalados: ${nc}"
-echo -e "${yellow}1) Node Version Manager (nvm)${nc}"
-echo -e "${yellow}2) Node (versão 16.15.1)${nc}"
-echo -e "${yellow}3) yarn (gerenciador de pacotes)${nc}"
-echo -e "${yellow}4) pm2 (gerenciador de processos)${nc}"
+echo -e "${nc}Script de compilação e inicialização de projetos Node${nc}\n" 
+echo -e "${nc}Identifica o caminho onde o script está sendo chamado, e usa a pasta ${destino} como destino dos projetos compilados.${nc}"
+echo -e "${nc}Além disso, é preciso ter os sequintes softwares/scripts instalados: ${nc}"
+echo -e "${nc}1) make, gcc, g++ (build-essential) ${nc}"
+echo -e "${nc}2) Node Version Manager (nvm)${nc}"
+echo -e "${nc}3) Node (versão 16.15.1)${nc}"
+echo -e "${nc}4) yarn (gerenciador de pacotes)${nc}"
+echo -e "${nc}5) pm2 (gerenciador de processos)${nc}"
+
+echo -e "${nc}Verificando as ferramentas de compilação. Caso algum erro ocorre, instale as ferramentas de compilação apropriadas ao seu sistema${nc}"
+echo -e "${nc}No caso de Ubuntu e similares, use 'sudo apt install build-essential'${nc}"
+if ! [ -x "$(command -v make)" ]; then
+  echo "${red}'make' não encontrado!${nc}" >&2
+  exit 1
+fi
+
+echo -e "${yellow}Verificando se 'gcc' node está instalado...${nc}"
+if ! [ -x "$(command -v gcc)" ]; then
+  echo "${red}'gcc' não encontrado!${nc}" >&2
+  exit 1
+fi
+
+echo -e "${yellow}Verificando se 'g++' node está instalado...${nc}"
+if ! [ -x "$(command -v g++)" ]; then
+  echo "${red}'g++' não encontrado!${nc}" >&2
+  exit 1
+fi
 
 echo -e "${yellow}Verificando se 'nvm' node está instalado...${nc}"
 if [ ! -d "${HOME}/.nvm/.git" ]
 then
   echo -e "${red}"Node Version Manager" (nvm) não encontrado. É preciso baixar e instalar este software antes de dar prosseguimento.${nc}"
-  exit
+  exit 1
 fi
 
 echo -e "${yellow}Verificando se 'node' node está instalado...${nc}"
 if ! [ -x "$(command -v npm)" ]; then
   echo 'Instalando node versão 16.15.1' >&2
+  export NVM_DIR=$HOME/.nvm;
+  source $NVM_DIR/nvm.sh;
   nvm install 16.15.1
 fi
 
-
 echo -e "${yellow}Verificando se 'yarn' node está instalado...${nc}"
-command -v yarn >/dev/null 2>&1 || { npm install yarn -g; exit 0; }
+command -v yarn >/dev/null 2>&1 || { npm install yarn --location=global; }
 
 echo -e "${yellow}Verificando se 'pm2' node está instalado...${nc}"
-command -v pm2 >/dev/null 2>&1 || { npm install pm2 -g; exit 0; }
+command -v pm2 >/dev/null 2>&1 || { npm install pm2 --location=global;  }
 
-# Baixar a versão 'main' que será colocada em produção
+echo -e "Removendo compilação anterior"
+cd $caminho
+rm -rf tsconfig.tsbuildinfo
+rm -rf build
+
+# Baixar a versão desejada, ou a padrão
 echo -e "Digite a versão desejada, ou 'enter' para compilar a última tag encontrada."
 read version
 if [ -z "$version" ]
@@ -52,45 +78,53 @@ fi
 echo -e "Compilando a versão ${green}${version}${nc}"
 git checkout $version
 git pull
+echo -e "Baixando pacotes..."
+yarn
+echo -e "Compilando projeto..."
+yarn build
 
-cd ${caminho}/..
-if [ -d backend ] 
-then
-  cd backend
-  rm -rf dist
-  yarn
-  yarn typeorm migration:run
-  yarn build
-  echo -e "${green}Removendo pacotes de desenv${nc}"
-  yarn --prod
-  cp .env dist/.env
-  sed -i '/APP_VERSION/ c\APP_VERSION='${version} dist/.env
-  cp ormconfig.ts dist/ormconfig.js
-  cp -r node_modules dist/node_modules
-fi
-
-cd ${caminho}/..
 if [ -f .env ]
 then
-  echo -e "${yellow}Removendo instâncias antigas do projeto no PM2${nc}"
-  pm2 delete all
-  rm -rf ${destino}/${sistema}
-  mkdir -p ${destino}${sistema}
-  echo -e "${yellow}Movendo arquivos...${nc}"
-  cp ecosystem.config.js ${destino}${sistema}
-  mv backend/dist ${destino}${sistema}/backend
-  mv frontend/build ${destino}${sistema}/frontend
+  echo -e "Copiando dados de ambiente para a pasta de compilação."
+  cp .env build/.env
 else
-  echo -e "${red}Arquivo ${yellow} ecosystem ${red} não encontrado. Saindo..."
+  echo -e "${red}Arquivo com dados de ambiente (.env) não encontrado. Saindo.${nc}"
+  rm -rf tsconfig.tsbuildinfo
+  rm -rf build
+  exit 1
 fi
 
-cd ${destino}${sistema}
-pm2 flush
-pm2 start
+echo -e "Removendo pacotes de desenvolvimento..."
+yarn --prod
+echo -e "Copiando pacotes de produção para a pasta de compilação."
+cp -r node_modules build/node_modules
 
-echo -e "${yellow}Restaurando versão de desenvolvimento${nc}"
-cd ${caminho}/..
-cd backend
-yarn 
-cd ../frontend
-yarn
+echo -e "Copiando arquivos de configuração do bot."
+cp -r src/config build/config
+
+echo -e "${yellow}Interrompendo bot e fazendo backup da versão atual${nc}"
+pm2 delete --silent bot
+
+if [ -d $destino/$sistema ]
+then
+  rm -rf $destino/"$sistema.bak"
+  mv $destino/$sistema $destino/"$sistema.bak"
+fi
+
+echo -e "${nc}Copiando nova compilação para a pasta $destino/$sistema${nc}"
+cp -r build $destino/$sistema
+
+echo -e "${nc}Restaurando banco de dados (arquivo queue.db)${nc}"
+if [ -f $destino/"$sistema.bak"/queue.db ]
+then
+  cp $destino/"$sistema.bak"/queue.db $destino/$sistema/.
+else
+  echo -e "${red}Arquivo de dados não encontrado!${nc}"
+fi
+
+echo -e "${green}Iniciando bot com pm2${nc}"
+cd $destino/$sistema
+pm2 start bot.js
+
+
+

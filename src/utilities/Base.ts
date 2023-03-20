@@ -25,10 +25,10 @@ export class Base {
   }
 
   protected static config: ConfigJson = JSON.parse(
-    readFileSync("../config/config.json", "utf8")
+    readFileSync("config/config.json", "utf8")
   );
   protected static cmdConfig: CommandConfigJson = JSON.parse(
-    readFileSync("../config/command-config.json", "utf8")
+    readFileSync("config/command-config.json", "utf8")
   );
 
   protected static knex = knex({
